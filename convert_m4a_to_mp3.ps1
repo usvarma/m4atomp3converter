@@ -1,16 +1,21 @@
 
 param([string]$inputpath, [string]$outputpath="convertedfiles")
 
-$isValidInputPath = Test-Path -path $inputpath
-$isValidOutputPath = Test-Path -path $outputpath
-$current_directory = pwd
+
+$isValidInputPath = Test-Path -LiteralPath $inputpath
+$isValidOutputPath = Test-Path -LiteralPath $outputpath
+$current_directory = Get-Location
 $default_output_folder = "convertedfiles"
 
 if(!$isValidOutputPath)
 {
-	$outputpath = "{0}{1}" -f $current_directory,$default_output_folder
-	mkdir $outputpath
+	$outputpath = Join-Path -Path $current_directory -ChildPath $default_output_folder
+	$isOutputDirExists = Test-Path -path $outputpath
+	if(!$isOutputDirExists){
+		mkdir $outputpath
+	}
 }
+	
 
 
 if ( $isValidInputPath )
@@ -41,4 +46,7 @@ if ( $isValidInputPath )
 			}
 		}
 	}
+}else{
+	Write-Output "Please check your input path. It seems to be invalid."
+	Write-Output "Path entered: ${inputpath}"
 }
