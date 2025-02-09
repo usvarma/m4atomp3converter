@@ -4,7 +4,7 @@ Sample tutorial for installing and configuring ffmpeg on windows: https://www.wi
 
 Usage: 
 1. Open a powershell window on your machine
-2. Run the script by typing this command: .\convert_m4a_to_mp3.ps1 -inputpath "yourinputlocation" -outputpath "locationforconvertedfiles".
+2. Run the script by typing this command: .\convert_m4a_to_mp3.ps1 -inputPath "yourinputlocation" -outputPath "locationforconvertedfiles".
 
 Where:
 "yourinputlocation" -> path of the folder containing music files which you want to convert.
