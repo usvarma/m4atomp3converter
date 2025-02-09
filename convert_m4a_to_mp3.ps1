@@ -1,4 +1,4 @@
-param([string]$inputpath, [string]$outputpath = "convertedfiles")
+param([string]$inputPath, [string]$outputPath = "convertedfiles")
 
 
 # This function takes input path where audio files are present
@@ -7,36 +7,36 @@ param([string]$inputpath, [string]$outputpath = "convertedfiles")
 function ConvertToMp3 {
 
 	param(
-		[string] $inputpath,
-		[string] $outputpath
+		[string] $inputPath,
+		[string] $outputPath
 	)
 	
-	$m4afiles = @(Get-ChildItem -path $inputpath -Filter *.m4a -Name)
+	$audiofiles = @(Get-ChildItem -path $inputPath -Filter *.m4a -Name)
 		
-	if ( $m4afiles.count -gt 0 ) {
+	if ( $audiofiles.count -gt 0 ) {
 			
-		$isOutputFolderExists = Test-Path -LiteralPath $outputpath
+		$isOutputFolderExists = Test-Path -LiteralPath $outputPath
 		if (!$isOutputFolderExists) {
-			mkdir $outputpath
+			mkdir $outputPath
 		}	
 			
-		foreach ($file in $m4afiles) {
-			$input_file_fullpath = Join-Path -Path $inputpath -ChildPath $file
-			$substringsize = $file.Length - 4
+		foreach ($file in $audiofiles) {
+			$inputFileFullPath = Join-Path -Path $inputPath -ChildPath $file
+			$substringSize = $file.Length - 4
 			  
-			$outputfile = "{0}{1}" -f $file.Substring(0, $substringsize), $target_file_extension
-			$output_file_path = Join-Path -Path $outputpath -ChildPath $outputfile
+			$outputFile = "{0}{1}" -f $file.Substring(0, $substringSize), $outputFormat
+			$outputFilePath = Join-Path -Path $outputPath -ChildPath $outputFile
 			  
-			ffmpeg -i $input_file_fullpath -c:a libmp3lame -q:a 0 $output_file_path
+			ffmpeg -i $inputFileFullPath -c:a libmp3lame -q:a 0 $outputFilePath
 		}
 	}
 }
 
-$isValidInputPath = Test-Path -LiteralPath $inputpath
-$isValidOutputPath = Test-Path -LiteralPath $outputpath
-$current_directory = Get-Location
-$default_output_folder = "convertedfiles"
-$target_file_extension = ".mp3"
+$isValidInputPath = Test-Path -LiteralPath $inputPath
+$isValidOutputPath = Test-Path -LiteralPath $outputPath
+$currentDirectory = Get-Location
+$defaultOutputFolder = "convertedfiles"
+$outputFormat = ".mp3"
 
 
 if ( $isValidInputPath ) {
@@ -44,38 +44,38 @@ if ( $isValidInputPath ) {
 	#Check if user has entered a value for output folder
 	#If user has not entered any value, set the default output folder as a subfolder of current working folder
 	if (!$isValidOutputPath) {
-		$outputpath = Join-Path -Path $current_directory -ChildPath $default_output_folder
-		$isOutputDirExists = Test-Path -path $outputpath
+		$outputPath = Join-Path -Path $currentDirectory -ChildPath $defaultOutputFolder
+		$isOutputDirExists = Test-Path -path $outputPath
 		if (!$isOutputDirExists) {
-			mkdir $outputpath
+			mkdir $outputPath
 		}
 	}
 
 	#If the input path has subfolders, call the function to convert the files recursively
 	#by getting the subfolders
 
-	$subfolders = @(Get-ChildItem -path $inputpath -Recurse -Directory -Name)
+	$subFolders = @(Get-ChildItem -path $inputPath -Recurse -Directory -Name)
 
-	if ( $subfolders.count -gt 0 ) {
-		foreach ($subfolders in $subfolders) {
-			$input_path = Join-Path -Path $inputpath -ChildPath $subfolders
-			$output_path = Join-Path -Path $outputpath -ChildPath $subfolders
+	if ( $subFolders.count -gt 0 ) {
+		foreach ($subfolder in $subFolders) {
+			$finalInputPath = Join-Path -Path $inputPath -ChildPath $subfolder
+			$finalOutputPath = Join-Path -Path $outputPath -ChildPath $subfolder
 	
-			ConvertToMp3 -inputpath $input_path -outputpath $output_path
+			ConvertToMp3 -inputPath $finalInputPath -outputPath $finalOutputPath
 		}
 	}
 	else {
 		#Input path doesn't have any sub-folders. So set the output directory name same as input directory name
-		$input_directory = Split-Path -Path $inputpath -Leaf
-		$output_path = Join-Path -Path $outputpath -ChildPath $input_directory
+		$finalInputPath = Split-Path -Path $inputPath -Leaf
+		$finalOutputPath = Join-Path -Path $outputPath -ChildPath $finalInputPath
 		
-		ConvertToMp3 -inputpath $inputpath -outputpath $output_path
+		ConvertToMp3 -inputPath $inputPath -outputPath $finalOutputPath
 	}
 
 }
 else {
 	Write-Output "Please check your input path. It seems to be invalid."
-	Write-Output "Path entered: ${inputpath}"
+	Write-Output "Path entered: ${inputPath}"
 }
 
 
